@@ -12,9 +12,9 @@ import (
 )
 
 type Config struct {
-	port        string
-	jwtScret    string
-	databaseURL string
+	Port        string
+	JWTScret    string
+	DatabaseURL string
 }
 
 type Server interface {
@@ -35,22 +35,22 @@ func NewConfig(port string, jwtScret string, dataBaseURL string) (*Config, error
 		return nil, errors.New("All fields are required for to create a new config")
 	}
 	return &Config{
-		port:        port,
-		jwtScret:    jwtScret,
-		databaseURL: dataBaseURL,
+		Port:        port,
+		JWTScret:    jwtScret,
+		DatabaseURL: dataBaseURL,
 	}, nil
 }
 
 func NewServer(ctx context.Context, config *Config) (*Broker, error) {
-	if config.port == "" {
+	if config.Port == "" {
 		return nil, errors.New("port is required")
 	}
 
-	if config.jwtScret == "" {
+	if config.JWTScret == "" {
 		return nil, errors.New("secret is required")
 	}
 
-	if config.databaseURL == "" {
+	if config.DatabaseURL == "" {
 		return nil, errors.New("database url is required")
 	}
 
@@ -66,16 +66,16 @@ func (b *Broker) Start(binder func(s Server, r *mux.Router)) {
 	b.router = mux.NewRouter()
 	binder(b, b.router)
 
-	repo, err := database.NewPostgresRepository(b.config.databaseURL)
+	repo, err := database.NewPostgresRepository(b.config.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	repository.SetRepository(repo)
 
-	log.Println("Starting server on port: ", b.Config().port)
+	log.Println("Starting server on port: ", b.Config().Port)
 
-	if err := http.ListenAndServe(b.config.port, b.router); err != nil {
+	if err := http.ListenAndServe(b.config.Port, b.router); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }
