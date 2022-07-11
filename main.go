@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"rest-ws/handlers"
+	"rest-ws/middleware"
 	"rest-ws/server"
 
 	"github.com/gorilla/mux"
@@ -43,7 +44,9 @@ func main() {
 }
 
 func BindRoutes(s server.Server, r *mux.Router) {
+	r.Use(middleware.CheckAuthMiddleware(s))
 	r.HandleFunc("/", handlers.HomeHandlers(s)).Methods(http.MethodGet)
 	r.HandleFunc("/signup", handlers.SingUpHanlder(s)).Methods(http.MethodPost)
 	r.HandleFunc("/login", handlers.LoginHandler(s)).Methods(http.MethodPost)
+	r.HandleFunc("/me", handlers.MeHandler(s)).Methods(http.MethodGet)
 }
